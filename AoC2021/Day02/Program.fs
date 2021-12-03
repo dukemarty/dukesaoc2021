@@ -25,22 +25,32 @@ let lines =
     |> Seq.map parseLine
     |> List.ofSeq
 
-let rec divePos data horiz depth =
+let rec divePosPart1 data horiz depth =
     match data with
-    | (Forward v) :: taildata -> divePos taildata (horiz + v) depth
-    | (Up v) :: taildata -> divePos taildata horiz (depth - v)
-    | (Down v) :: taildata -> divePos taildata horiz (depth + v)
+    | (Forward v) :: taildata -> divePosPart1 taildata (horiz + v) depth
+    | (Up v) :: taildata -> divePosPart1 taildata horiz (depth - v)
+    | (Down v) :: taildata -> divePosPart1 taildata horiz (depth + v)
     | [] -> (horiz, depth)
 
 let part1 data =
-    let horiz, depth = divePos data 0 0
+    let horiz, depth = divePosPart1 data 0 0
     printfn "Part 1: %d, %d -> %d" horiz depth (horiz * depth)
-    0
 
+let rec divePosPart2 data horiz depth aim =
+    match data with
+        | (Forward v) :: taildata -> divePosPart2 taildata (horiz + v) (depth + v*aim) aim
+        | (Up v) :: taildata -> divePosPart2 taildata horiz depth (aim - v)
+        | (Down v) :: taildata -> divePosPart2 taildata horiz depth (aim + v)
+        | [] -> (horiz, depth, aim)
+
+let part2 data =
+    let horiz, depth, aim = divePosPart2 data 0 0 0
+    printfn "Part 2: %d, %d (%d) -> %d" horiz depth aim (horiz*depth)
 
 [<EntryPoint>]
 let main argv =
     printfn "Day 2: Dive!\n============\n"
     //printfn "%A" lines
     part1 lines
+    part2 lines
     0 // return an integer exit code
