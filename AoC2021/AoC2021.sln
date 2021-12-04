@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		scratchpad.fsx = scratchpad.fsx
 	EndProjectSection
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Day04", "Day04\Day04.fsproj", "{B925C6E8-A484-4E64-AE74-0C946044F87E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{88F526E4-7EAB-48CF-BC16-89E48D3A3B3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88F526E4-7EAB-48CF-BC16-89E48D3A3B3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88F526E4-7EAB-48CF-BC16-89E48D3A3B3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B925C6E8-A484-4E64-AE74-0C946044F87E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B925C6E8-A484-4E64-AE74-0C946044F87E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B925C6E8-A484-4E64-AE74-0C946044F87E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B925C6E8-A484-4E64-AE74-0C946044F87E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
