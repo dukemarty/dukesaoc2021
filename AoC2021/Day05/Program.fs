@@ -39,9 +39,9 @@ let countOverlappedPoints points =
             | _ -> res
 
     let pointsSorted = points |> List.sort
-    printfn "Sorted points: %A" pointsSorted
+    //printfn "Sorted points: %A" pointsSorted
     let overlappedPoints = filterForMultiples pointsSorted [] false
-    printfn "Overlapped points: %A" overlappedPoints
+    //printfn "Overlapped points: %A" overlappedPoints
     overlappedPoints.Length
 
 let part1ManhattanLines lines =
