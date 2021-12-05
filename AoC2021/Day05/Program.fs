@@ -22,6 +22,31 @@ let expandHorizVertLines line =
     | _ -> Seq.empty |> List.ofSeq
 
 
+let expandDiagonalLine line =
+    let max (a, b) = if (a > b) then a else b
+    let min (a, b) = if (a < b) then a else b
+    let calcDelta (v1, v2) = if (v1 > v2) then -1 else 1
+
+    match line with
+    | (fromX :: fromY :: _) :: (toX :: toY :: _) :: _ when fromX = toX -> Seq.empty |> List.ofSeq
+    | (fromX :: fromY :: _) :: (toX :: toY :: _) :: _ when fromY = toY -> Seq.empty |> List.ofSeq
+    | (fromX :: fromY :: _) :: (toX :: toY :: _) :: _ ->
+        let (deltaX, deltaY) =
+            (calcDelta (fromX, toX), calcDelta (fromY, toY))
+
+        let mutable (currX, currY) = (fromX, fromY)
+        let endPoint = (toX, toY)
+        let mutable res = [ (currX, currY) ]
+
+        while (not ((currX, currY) = endPoint)) do
+            currX <- currX + deltaX
+            currY <- currY + deltaY
+            res <- (currX, currY) :: res
+
+        res
+    | _ -> Seq.empty |> List.ofSeq
+
+
 let countOverlappedPoints points =
     let rec filterForMultiples rawList res run =
         match res with
@@ -47,14 +72,32 @@ let countOverlappedPoints points =
 let part1ManhattanLines lines =
     let horizVert =
         List.concat (lines |> Seq.map expandHorizVertLines)
-    printfn "Lines points: %A" horizVert
+
+    //printfn "Lines points: %A" horizVert
 
     let res = countOverlappedPoints horizVert
     printfn "Part 1, number of overlapping fields: %d" res
+
+let part2AllLines lines =
+    let horizVert =
+        List.concat (lines |> Seq.map expandHorizVertLines)
+
+    let diags =
+        List.concat (lines |> Seq.map expandDiagonalLine)
+
+    let allPoints = List.concat ([ horizVert; diags ])
+    printfn "Lines points: %A" allPoints
+
+    let res = countOverlappedPoints allPoints
+    printfn "Lines points: %A" allPoints
+    let res = countOverlappedPoints allPoints
+    printfn "Part 2, number of overlapping fields: %d" res
+
 
 [<EntryPoint>]
 let main argv =
     printfn "Day 5: Hydrothermal Venture\n===========================\n"
     printfn "All lines: %A" (DataInput.lines |> List.ofSeq)
     part1ManhattanLines DataInput.lines
+    part2AllLines DataInput.lines
     0 // return an integer exit code
