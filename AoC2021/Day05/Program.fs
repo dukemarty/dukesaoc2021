@@ -1,22 +1,19 @@
 ﻿// Learn more about F# at http://fsharp.org
 
-open System
+open AoC.Utils
 
 let expandHorizVertLines line =
-    let max (a, b) = if (a > b) then a else b
-    let min (a, b) = if (a < b) then a else b
-
     match line with
     | (fromX :: fromY :: _) :: (toX :: toY :: _) :: _ when fromX = toX ->
         //printfn "Found vertical line: %A" line
 
-        seq { for y in min (fromY, toY) .. max (fromY, toY) -> y }
+        seq { for y in Comparisons.min (fromY, toY) .. Comparisons.max (fromY, toY) -> y }
         |> Seq.map (fun y -> (fromX, y))
         |> List.ofSeq
     | (fromX :: fromY :: _) :: (toX :: toY :: _) :: _ when fromY = toY ->
         //printfn "Found horizontal line: %A" line
 
-        seq { for x in min (fromX, toX) .. max (fromX, toX) -> x }
+        seq { for x in Comparisons.min (fromX, toX) .. Comparisons.max (fromX, toX) -> x }
         |> Seq.map (fun x -> (x, fromY))
         |> List.ofSeq
     | _ -> Seq.empty |> List.ofSeq

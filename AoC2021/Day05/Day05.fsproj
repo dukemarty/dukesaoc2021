@@ -16,4 +16,8 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AoC.Utils\AoC.Utils.fsproj" />
+  </ItemGroup>
+
 </Project>

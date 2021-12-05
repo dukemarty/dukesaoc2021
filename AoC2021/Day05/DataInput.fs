@@ -1,11 +1,7 @@
 ﻿module DataInput
 
 open System
-
-let readLines filePath = System.IO.File.ReadLines(filePath)
-
-let rawLines =
-    readLines @"data\puzzle.txt" |> List.ofSeq
+open AoC.Utils
 
 let parseLine (line: string) =
     line.Split(" -> ")
@@ -16,4 +12,5 @@ let parseLine (line: string) =
             |> List.ofSeq)
     |> List.ofSeq
 
-let lines = rawLines |> Seq.map parseLine
+let lines = DataInput.standardPuzzle |> Seq.map parseLine
+//let lines = DataInput.standardSample |> Seq.map parseLine
