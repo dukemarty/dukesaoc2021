@@ -2,19 +2,21 @@
 
 open AoC.Utils
 
+type Point = Point of int * int
+
 let expandHorizVertLines line =
     match line with
     | (fromX :: fromY :: _) :: (toX :: toY :: _) :: _ when fromX = toX ->
         //printfn "Found vertical line: %A" line
 
         seq { for y in Comparisons.min (fromY, toY) .. Comparisons.max (fromY, toY) -> y }
-        |> Seq.map (fun y -> (fromX, y))
+        |> Seq.map (fun y -> Point(fromX, y))
         |> List.ofSeq
     | (fromX :: fromY :: _) :: (toX :: toY :: _) :: _ when fromY = toY ->
         //printfn "Found horizontal line: %A" line
 
         seq { for x in Comparisons.min (fromX, toX) .. Comparisons.max (fromX, toX) -> x }
-        |> Seq.map (fun x -> (x, fromY))
+        |> Seq.map (fun x -> Point(x, fromY))
         |> List.ofSeq
     | _ -> Seq.empty |> List.ofSeq
 
@@ -31,18 +33,18 @@ let expandDiagonalLine line =
 
         let mutable (currX, currY) = (fromX, fromY)
         let endPoint = (toX, toY)
-        let mutable res = [ (currX, currY) ]
+        let mutable res = [ Point(currX, currY) ]
 
         while (not ((currX, currY) = endPoint)) do
             currX <- currX + deltaX
             currY <- currY + deltaY
-            res <- (currX, currY) :: res
+            res <- Point(currX, currY) :: res
 
         res
     | _ -> Seq.empty |> List.ofSeq
 
 
-let countOverlappedPoints points =
+let countOverlappedPoints (points: Point list) =
     let rec filterForMultiples rawList res run =
         match res with
         | l :: ls ->
