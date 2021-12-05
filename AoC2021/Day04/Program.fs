@@ -67,7 +67,47 @@ let part1BingoPoints =
     let (_, finishedCard) = cards.[finishedCardIndex]
     let remainingCardPoints = calcCardPoints finishedCard
     let lastNumber = draws.[i]
-    printfn "Resulting points: %d (%d * %d)" (remainingCardPoints * lastNumber) remainingCardPoints lastNumber
+    printfn "Part 1, resulting points: %d (%d * %d)" (remainingCardPoints * lastNumber) remainingCardPoints lastNumber
+
+
+let part2LastBingoPoints =
+    let mutable i = 0
+    let mutable finishedCardIndex = -1
+    let mutable finished = false
+    let mutable cards = cardsRaw |> List.indexed
+
+    while (i < draws.Length && not finished) do
+        cards <-
+            cards
+            |> List.map (fun (_, c) -> applyNumberToCard draws.[i] c)
+            |> List.indexed
+
+        //printfn "Updated cards after %d: %A" draws.[i] cards
+        //printfn "------------------------------------"
+
+        let finishedCards =
+            cards
+            |> List.map (fun (i, c) -> (i, (checkCardForFinished c)))
+            |> List.filter (fun (i, b) -> b)
+
+        if (cards.Length > 1) then
+            cards <- cards |> List.filter (fun (_, c) -> not (checkCardForFinished c))
+            i <- i + 1
+        else
+            if (finishedCards.Length > 0) then
+                let (x, _) = List.head (finishedCards)
+                finishedCardIndex <- x
+                finished <- true
+            else
+                i <- i + 1
+
+    printfn "Finished while-loop, i=%d, fCI=%d, f=%b" i finishedCardIndex finished
+
+    let (_, finishedCard) = cards.[finishedCardIndex]
+    let remainingCardPoints = calcCardPoints finishedCard
+    let lastNumber = draws.[i]
+    printfn "Part 2, resulting points: %d (%d * %d)" (remainingCardPoints * lastNumber) remainingCardPoints lastNumber
+
 
 [<EntryPoint>]
 let main argv =
@@ -75,4 +115,5 @@ let main argv =
     //printfn "%A" draws
     //printfn "%A" cardsRaw
     part1BingoPoints
+    part2LastBingoPoints
     0 // return an integer exit code
