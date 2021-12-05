@@ -25,8 +25,8 @@ let expandDiagonalLine line =
     let calcDelta (v1, v2) = if (v1 > v2) then -1 else 1
 
     match line with
-    | (fromX :: fromY :: _) :: (toX :: toY :: _) :: _ when fromX = toX -> Seq.empty |> List.ofSeq
-    | (fromX :: fromY :: _) :: (toX :: toY :: _) :: _ when fromY = toY -> Seq.empty |> List.ofSeq
+    | (fromX :: _ :: _) :: (toX :: _ :: _) :: _ when fromX = toX -> Seq.empty |> List.ofSeq
+    | (_ :: fromY :: _) :: (_ :: toY :: _) :: _ when fromY = toY -> Seq.empty |> List.ofSeq
     | (fromX :: fromY :: _) :: (toX :: toY :: _) :: _ ->
         let (deltaX, deltaY) =
             (calcDelta (fromX, toX), calcDelta (fromY, toY))
@@ -47,12 +47,12 @@ let expandDiagonalLine line =
 let countOverlappedPoints (points: Point list) =
     let rec filterForMultiples rawList res run =
         match res with
-        | l :: ls ->
+        | l :: _ ->
             match rawList with
-            | x1 :: x2 :: xs when run && x1 = l -> filterForMultiples (x2 :: xs) res true
-            | x1 :: x2 :: xs when run && x1 = x2 -> filterForMultiples xs (x1 :: res) true
-            | x1 :: x2 :: xs when not run && x1 = x2 -> filterForMultiples xs (x1 :: res) true
-            | x :: xs -> filterForMultiples xs res false
+            | x1 :: x2 :: xs when run && x1 = l && x1 = x2 -> filterForMultiples xs res true
+            | x1 :: x2 :: xs when run && x1 = l -> filterForMultiples (x2 :: xs) res false
+            | x1 :: x2 :: xs when x1 = x2 -> filterForMultiples xs (x1 :: res) true
+            | _ :: xs -> filterForMultiples xs res false
             | [] -> res
         | [] ->
             match rawList with
