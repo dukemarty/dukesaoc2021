@@ -8,13 +8,13 @@ let expandHorizVertLines line =
 
     match line with
     | (fromX :: fromY :: _) :: (toX :: toY :: _) :: _ when fromX = toX ->
-        printfn "Found vertical line: %A" line
+        //printfn "Found vertical line: %A" line
 
         seq { for y in min (fromY, toY) .. max (fromY, toY) -> y }
         |> Seq.map (fun y -> (fromX, y))
         |> List.ofSeq
     | (fromX :: fromY :: _) :: (toX :: toY :: _) :: _ when fromY = toY ->
-        printfn "Found horizontal line: %A" line
+        //printfn "Found horizontal line: %A" line
 
         seq { for x in min (fromX, toX) .. max (fromX, toX) -> x }
         |> Seq.map (fun x -> (x, fromY))
@@ -23,8 +23,6 @@ let expandHorizVertLines line =
 
 
 let expandDiagonalLine line =
-    let max (a, b) = if (a > b) then a else b
-    let min (a, b) = if (a < b) then a else b
     let calcDelta (v1, v2) = if (v1 > v2) then -1 else 1
 
     match line with
@@ -86,10 +84,8 @@ let part2AllLines lines =
         List.concat (lines |> Seq.map expandDiagonalLine)
 
     let allPoints = List.concat ([ horizVert; diags ])
-    printfn "Lines points: %A" allPoints
+    //printfn "Lines points: %A" allPoints
 
-    let res = countOverlappedPoints allPoints
-    printfn "Lines points: %A" allPoints
     let res = countOverlappedPoints allPoints
     printfn "Part 2, number of overlapping fields: %d" res
 
@@ -97,7 +93,7 @@ let part2AllLines lines =
 [<EntryPoint>]
 let main argv =
     printfn "Day 5: Hydrothermal Venture\n===========================\n"
-    printfn "All lines: %A" (DataInput.lines |> List.ofSeq)
+    //printfn "All lines: %A" (DataInput.lines |> List.ofSeq)
     part1ManhattanLines DataInput.lines
     part2AllLines DataInput.lines
     0 // return an integer exit code
