@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Compile Include="Comparisons.fs" />
+    <Compile Include="DataProcessing.fs" />
     <Compile Include="Data.fs" />
   </ItemGroup>
 
