@@ -7,6 +7,7 @@ open AoC.Utils
 let initState data =
     seq { for i in 0 .. 8 -> i }
     |> Seq.map (fun i -> (data |> Seq.filter (fun n -> n = i) |> Seq.length))
+    |> Seq.map (fun i -> uint64 i)
     |> List.ofSeq
 
 let updateState state =
@@ -28,7 +29,13 @@ let part1Growth80days data =
     let finalState = runDays state 80
     printfn "  Final state: %A" finalState
     let res = finalState |> List.sum
-    printfn "Final number of fish after 80 days: %d" res
+    printfn "Part 1: Final number of fish after  80 days: %d" res
+
+let part2Growth256days data =
+    let state = initState data
+    let finalState = runDays state 256
+    let res = finalState |> List.sum
+    printfn "Part 2: Final number of fish after 256 days: %d" res
 
 [<EntryPoint>]
 let main argv =
@@ -37,6 +44,7 @@ let main argv =
     let data =
         DataInput.commaSeparatedIntList DataInput.Puzzle
 
-    printfn "Initial data: %A" (data |> List.ofSeq)
+    //printfn "Initial data: %A" (data |> List.ofSeq)
     part1Growth80days data
+    part2Growth256days data
     0 // return an integer exit code
