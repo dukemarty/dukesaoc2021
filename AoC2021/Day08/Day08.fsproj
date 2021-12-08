@@ -13,6 +13,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="DisplayData.fs" />
+    <Compile Include="Analysis.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
