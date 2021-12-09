@@ -6,7 +6,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="data\puzzle.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="data\sample.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="Heatmap.fs" />
     <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AoC.Utils\AoC.Utils.fsproj" />
   </ItemGroup>
 
 </Project>
