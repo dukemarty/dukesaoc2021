@@ -30,3 +30,12 @@ module DataInput =
     let commaSeparatedIntList source =
         (singleRawLine source).Split(",")
         |> Seq.map Int32.Parse
+
+    let intMatrix source =
+        multipleRawLines source
+        |> Seq.map
+            (fun r ->
+                r.ToCharArray()
+                |> Seq.map (fun c -> Int32.Parse(string c))
+                |> Array.ofSeq)
+        |> Array.ofSeq
