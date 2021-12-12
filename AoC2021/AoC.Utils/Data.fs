@@ -7,24 +7,28 @@ module DataInput =
     type DataSource =
         | Sample
         | Puzzle
+        | SampleI of int
 
     let private readLines filePath = System.IO.File.ReadLines(filePath)
 
-    let standardSample =
-        readLines @"data\sample.txt" |> List.ofSeq
+    let standardSample s =
+        let file = @$"data\sample{s}.txt"
+        readLines file |> List.ofSeq
 
     let standardPuzzle =
         readLines @"data\puzzle.txt" |> List.ofSeq
 
     let multipleRawLines source =
         match source with
-        | Sample -> standardSample
+        | Sample -> standardSample ""
         | Puzzle -> standardPuzzle
+        | SampleI i -> standardSample (i.ToString())
 
     let singleRawLine source =
         (match source with
-         | Sample -> standardSample
-         | Puzzle -> standardPuzzle)
+         | Sample -> standardSample ""
+         | Puzzle -> standardPuzzle
+         | SampleI i -> standardSample (i.ToString()))
             .Head
 
     let commaSeparatedIntList source =
