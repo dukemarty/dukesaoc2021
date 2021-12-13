@@ -39,8 +39,6 @@ let private parseFolds (data: string list) =
         let m =
             Regex.Match(line, "fold along ([xy])=(\d+)")
 
-        printfn "  Match 1: %s" m.Groups.[1].Value
-        printfn "  Match 2: %d" (Int32.Parse(m.Groups.[2].Value.Trim()))
         createFold (m.Groups.[1].Value) (Int32.Parse(m.Groups.[2].Value.Trim()))
 
     data |> Seq.map parseSingleFold |> List.ofSeq
