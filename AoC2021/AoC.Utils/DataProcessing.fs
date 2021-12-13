@@ -2,6 +2,11 @@
 
 module DataProcessing =
 
+    open System
+
+    let isEmptyLine s = String.IsNullOrWhiteSpace s
+
+
     let splitListOnElem test lst =
         List.skipWhile
             (fun l -> l = [])

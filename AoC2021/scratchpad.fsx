@@ -76,3 +76,10 @@ let d7map = d7d |> List.countBy id |> Map.ofList
 
 d7map.Count / 2
 
+
+
+type FoldDirection =
+    | X
+    | Y
+
+
