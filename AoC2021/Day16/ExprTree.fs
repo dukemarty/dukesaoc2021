@@ -1,5 +1,4 @@
-﻿
-module ExprTree
+﻿module ExprTree
 
 open System
 
@@ -13,16 +12,35 @@ type Expression =
 let rec evaluateExpression expr =
     match expr with
     | Lit (_, v) -> v
-    | Op (_, 0, ls) -> ls |> List.map (fun e -> evaluateExpression e) |> List.sum
-    | Op (_, 1, ls) -> ls |> List.map (fun e -> evaluateExpression e) |> List.reduce (fun a b -> a*b)
-    | Op (_, 2, ls) -> ls |> List.map (fun e -> evaluateExpression e) |> List.min
-    | Op (_, 3, ls) -> ls |> List.map (fun e -> evaluateExpression e) |> List.max
+    | Op (_, 0, ls) -> List.sumBy evaluateExpression ls
+    | Op (_, 1, ls) -> ls |> List.map evaluateExpression |> List.reduce (*)
+    | Op (_, 2, ls) ->
+        ls
+        |> List.map evaluateExpression
+        |> List.min
+    | Op (_, 3, ls) ->
+        ls
+        |> List.map evaluateExpression
+        |> List.max
     | Op (_, 5, ls) ->
-        let lval::rval::_ = ls |> List.map (fun e -> evaluateExpression e)
-        if (lval > rval) then (uint64 1) else (uint64 0)
+        let lval :: rval :: _ = ls |> List.map evaluateExpression
+
+        if (lval > rval) then
+            (uint64 1)
+        else
+            (uint64 0)
     | Op (_, 6, ls) ->
-        let lval::rval::_ = ls |> List.map (fun e -> evaluateExpression e)
-        if (lval < rval) then (uint64 1) else (uint64 0)
+        let lval :: rval :: _ = ls |> List.map evaluateExpression
+
+        if (lval < rval) then
+            (uint64 1)
+        else
+            (uint64 0)
     | Op (_, 7, ls) ->
-        let lval::rval::_ = ls |> List.map (fun e -> evaluateExpression e)
-        if (lval = rval) then (uint64 1) else (uint64 0)
+        let lval :: rval :: _ = ls |> List.map evaluateExpression
+
+        if (lval = rval) then
+            (uint64 1)
+        else
+            (uint64 0)
+    | _ -> failwith "Unhandled expression!"
