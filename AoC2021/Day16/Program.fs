@@ -6,8 +6,8 @@ open AoC.Utils
 let rec sumVersions packets = 
     let sumHelper packet =
         match packet with
-        | Bitstream.Lit (v, _) -> v
-        | Bitstream.Op (v, _, ps) -> v + (sumVersions ps)
+        | ExprTree.Lit (v, _) -> v
+        | ExprTree.Op (v, _, ps) -> v + (sumVersions ps)
 
     match packets with
     | [p] -> sumHelper p
@@ -19,6 +19,11 @@ let part1VersionsSum bits =
     printfn "  Consumed: %d" consumedCount
     let res = sumVersions packets
     printfn "Part 1, sum of all versions: %d" res
+
+let part2EvaluateExpression bits =
+    let expr, _ = Bitstream.parsePackets bits
+    let res = ExprTree.evaluateExpression expr.Head
+    printfn "Part 2, value of expression tree: %d" res
 
 [<EntryPoint>]
 let main argv =
@@ -33,4 +38,5 @@ let main argv =
 
     printfn "Data: %s" bitstream
     part1VersionsSum bitstream
+    part2EvaluateExpression bitstream
     0 // return an integer exit code

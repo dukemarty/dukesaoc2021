@@ -24,6 +24,7 @@
     <Content Include="data\sample0.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Compile Include="ExprTree.fs" />
     <Compile Include="Bitstream.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

@@ -4,13 +4,6 @@ open System
 
 type Bitstream = string
 
-type Version = int
-type TypeId = int
-
-type Packet =
-    | Lit of Version * UInt64
-    | Op of Version * TypeId * (Packet list)
-
 type ParseMode =
     | SumLength of int
     | PackagesCount of int
@@ -61,16 +54,16 @@ let parsePackets (bitstream: string) =
             | 4 ->
                 let literalValue, consumed = parse4Literal d
                 printfn "  Decoded literal: %d" literalValue
-                Lit(v, literalValue), headerConsumedCount + consumed
+                ExprTree.Lit(v, literalValue), headerConsumedCount + consumed
             | _ ->
                 let remMode, opHeaderConsumedCount, remBits = parseOperationHeader d
                 match remMode with
                 | SumLength l ->
                     let ps, consumed = parseNextPacket remBits.[0..(l-1)] remMode
-                    Op (v, t, ps), headerConsumedCount + opHeaderConsumedCount + consumed
+                    ExprTree.Op (v, t, ps), headerConsumedCount + opHeaderConsumedCount + consumed
                 | PackagesCount n ->
                     let ps, consumed = parseNextPacket remBits remMode
-                    Op (v, t, ps), headerConsumedCount + opHeaderConsumedCount + consumed
+                    ExprTree.Op (v, t, ps), headerConsumedCount + opHeaderConsumedCount + consumed
 
         match mode with
         | SumLength n when (n - consumedCount) < 7 -> [p], consumedCount
