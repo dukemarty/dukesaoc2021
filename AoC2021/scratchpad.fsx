@@ -83,3 +83,7 @@ type FoldDirection =
     | Y
 
 
+let xsteps x =
+    -0.5 + sqrt(0.25 + 2.0*x)
+
+
