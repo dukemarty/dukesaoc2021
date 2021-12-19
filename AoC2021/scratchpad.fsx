@@ -1,81 +1,5 @@
-let s = seq { for i in 1 .. 10 -> i}
-
-
-let extractChar pos (numberStr: string) =
-    numberStr.[pos]
-
-extractChar 2 "00100"
 
 open System
-
-let countSingleBit numberList pos =
-    numberList |> Seq.map (extractChar pos) |> Seq.map string |> Seq.map Int32.Parse |> Seq.sum
-    
-
-let part1PowerConsumption (lines: string list)  =
-    let len = (List.head lines).Length
-    let index = seq { for i in 0 .. len -> i}
-    let t = countSingleBit lines
-    index |> Seq.map t
-    printfn "Power Consumption: %d" 0
-    0
-
-
-
-
-let a =  [ 5;1;2;3;5;3;4;6;4;5;7;4;2;5;3;5 ] 
-
-let test n = n=5
-
-let splitOn2 test lst =
-    let isEmptyList l = l=[]
-    List.skipWhile isEmptyList (    List.foldBack (fun el acc ->
-        match acc with
-        | [] when (test el) -> []
-        | [] -> [[el]]
-        | xs::ys when not (test el) -> (el::xs)::ys
-        | _ -> []::acc
-     )  lst [] )
-
-splitOn2 test a
-
-
-let splitOn test lst =
-    List.foldBack (fun el lst ->
-            match lst with
-            | [] -> [[el]]
-            | (x::xs)::ys when not (test el) -> (el::(x::xs))::ys
-            | _ -> [el]::lst
-         )  lst [] 
-
-splitOn test a
-
-
-let b=[ 1;2;5;2;3;1]
-
-b |> List.filter (fun i -> not (i=2))
-
-
-let d7s = "16,1,2,0,4,2,7,1,2,14"
-let d7d = d7s.Split(',') |> Seq.map Int32.Parse |> List.ofSeq
-
-let a1 = d7d |> Seq.map (fun i -> i - 1) |> List.ofSeq
-let a2 = d7d |> Seq.map (fun i -> i - 2) |> List.ofSeq
-let a3 = d7d |> Seq.map (fun i -> i - 3) |> List.ofSeq
-let n1 = a1 |> Seq.filter (fun i -> i < 0) |> Seq.sum
-let n2 = a2 |> Seq.filter (fun i -> i < 0) |> Seq.sum
-let n3 = a3 |> Seq.filter (fun i -> i < 0) |> Seq.sum
-let p1 = a1 |> Seq.filter (fun i -> i > 0) |> Seq.sum
-let p2 = a2 |> Seq.filter (fun i -> i > 0) |> Seq.sum
-let p3 = a3 |> Seq.filter (fun i -> i > 0) |> Seq.sum
-
-let d7sm = float (d7d |> List.sum) / (float d7d.Length)
-let d7qm = sqrt ( float (d7d |> Seq.map (fun i -> i*i) |> Seq.sum) / (float d7d.Length ) )
-
-let d7map = d7d |> List.countBy id |> Map.ofList
-
-d7map.Count / 2
-
 
 
 type FoldDirection =
@@ -85,5 +9,166 @@ type FoldDirection =
 
 let xsteps x =
     -0.5 + sqrt(0.25 + 2.0*x)
+
+
+type SnailDigit =
+    | Lit of int
+    | Num of SnailDigit * SnailDigit
+
+type SnailNumber = SnailDigit * SnailDigit
+
+
+let rec calcMagnitude (sn: SnailNumber) =
+    let helper sd =
+        match sd with
+        | Lit n -> n
+        | Num (l, r) -> calcMagnitude (l, r)
+
+    let (l, r) = sn
+    3 * (helper l) + 2 * (helper r)
+
+let sn1 = SnailNumber (Num (Lit 1, Lit 2), Num (Num (Lit 3, Lit 4), Lit 5))
+calcMagnitude sn1
+
+type ParsePart = Left | Right
+
+open System.Text.RegularExpressions
+let rsn1 = "[[1,2],[[3,4],5]]"
+let rsn2 = "[[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]"
+
+let parseSnailNumber1 s =
+    let rec helper (s:string) part =
+        match s.[0] with
+        | '[' ->
+            let lval, (rem: string) = helper (s.[1..]) Left
+            if (rem="") then
+                match lval with
+                | Num (l, r) -> lval, rem
+                | _ -> failwithf "Could not proceed after parsing %O" lval
+            else
+                match rem.[0] with
+                | ',' ->
+                    let rval, rem = helper (rem.[1..]) Right
+                    if (rem="") then
+                        Num (lval, rval), rem
+                    else
+                        match rem.[0] with
+                        | ']' -> Num (lval, rval), rem.[1..]
+                        | _ -> Num (lval, rval), rem
+                | _ -> failwithf "Encountered '%c' instead of ','" rem.[0]
+        | c when (Char.IsDigit c) ->
+            if (part = Left) then
+                let m = Regex.Match(s, "(\d+),(.+)")
+                let lval = Lit (Int32.Parse m.Groups.[1].Value)
+                let rval, remainder = helper m.Groups.[2].Value Right
+                Num (lval, rval), remainder
+            else
+                let m = Regex.Match(s, "(\d+)\](.+)")
+                Lit (Int32.Parse m.Groups.[1].Value), m.Groups.[2].Value
+        | c -> failwithf "Encountered %c" c
+
+    let res, rem = helper s Left
+    printf "Remainder after receiving result: %s" rem
+    match res with
+    | Num (l, r) -> SnailNumber (l, r)
+    | _ -> failwith "Not a valid SnailNumber)"
+
+
+let parseSnailNumber s =
+    let rec helper (s:string)=
+        match s.[0] with
+        | '[' ->
+            let lval, (rem: string) = helper (s.[1..])
+            match rem.[0] with
+            | ',' ->
+                let rval, rem = helper (rem.[1..])
+                match rem.[0] with
+                | ']' -> Num (lval, rval), rem.[1..]
+                | c -> failwithf "Encountered '%c' instead of ']'" c
+            | _ -> failwithf "Encountered '%c' instead of ','" rem.[0]
+        | c when (Char.IsDigit c) ->
+            let m = Regex.Match(s, "(\d+)(.*)")
+            Lit (Int32.Parse m.Groups.[1].Value), m.Groups.[2].Value
+        | c -> failwithf "Encountered %c" c
+
+    let res, rem = helper s
+    printf "Remainder after receiving result: %s" rem
+    match res with
+    | Num (l, r) -> SnailNumber (l, r)
+    | _ -> failwith "Not a valid SnailNumber)"
+
+
+parseSnailNumber rsn1
+parseSnailNumber rsn2
+
+let explTest1Raw = "[[[[[9,8],1],2],3],4]"
+let et1 = parseSnailNumber explTest1Raw
+
+type ExplResult =
+    | Nothing of SnailDigit
+    | Propagate of int*int
+    | PropLeft of int*SnailDigit
+    | PropRight of SnailDigit*int
+
+//let explode (l, r) =
+//    Nothing (l, r)
+
+let rec addLeft (sd: SnailDigit) v =
+    match sd with
+    | Lit n -> Lit (n+v)
+    | Num (l, r) -> Num ((addLeft l v), r)
+
+let rec addRight (sd: SnailDigit) v =
+    match sd with
+    | Lit n -> Lit (n+v)
+    | Num (l, r) -> Num (l, (addLeft r v))
+
+
+let rec tryExplode sn =
+    let rec helper sd depth =
+        if (depth = 4) then
+            printfn "Reached depth 5 with: %O" sd
+            match sd with
+            | Num (Lit l, Lit r) -> Propagate (l, r)
+            | _ -> failwith "Reached depth 5 but not with a literal!"
+        else
+            match sd with
+            | Num (l, r) ->
+                let resLeft = helper l (depth + 1)
+                match resLeft with
+                | Nothing _ ->
+                    let resRight = helper r (depth + 1)
+                    match resRight with
+                    | Nothing _ -> Nothing sd
+                    | Propagate (al, ar) -> PropRight ((addRight l al), ar)
+                    | x -> failwithf "helper for right term returned %O" x
+                | Propagate (al, ar) -> PropLeft (al, (addLeft r ar))
+                | PropLeft (al, d) -> PropLeft (al, Num (d, r))
+                | x -> failwithf "helper for left term returned %O" x
+            | Lit _ -> Nothing sd
+
+    let lval, rval = sn
+    let resLeft = helper lval 1
+    match resLeft with
+    | Nothing s ->
+        let resRight = helper rval 1
+        match resRight with
+        | Nothing t -> false, sn
+        | Propagate (addL, addR) -> failwith "Received Propagate on mainlevel"
+        | PropLeft (al, d) -> true, SnailNumber ((addLeft lval al), d)
+        | PropRight (d, ar) -> true, SnailNumber (lval, d)
+    | Propagate (addL, addR) -> failwith "Received Propagate on mainlevel"
+    | PropLeft (al, d) -> true, SnailNumber (d, rval)
+    | PropRight (d, ar) -> true, SnailNumber (d, (addRight rval ar))
+
+tryExplode et1
+
+
+let reduceSnailNumber sn =
+    sn
+
+let addSnailNumbers sn1 sn2 =
+    let raw = (sn1, sn2)
+    reduceSnailNumber raw
 
 
