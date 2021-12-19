@@ -67,5 +67,5 @@ let parseSnailNumber s =
     | _ -> failwith "Not a valid SnailNumber)"
 
 let loadData source =
-    let rawData = DataInput.multipleRawLines DataInput.Sample
+    let rawData = DataInput.multipleRawLines source
     rawData |> List.map parseSnailNumber

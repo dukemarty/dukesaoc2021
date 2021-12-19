@@ -101,12 +101,19 @@ let parseSnailNumber s =
 parseSnailNumber rsn1
 parseSnailNumber rsn2
 
-let explTest1Raw = "[[[[[9,8],1],2],3],4]"
-let et1 = parseSnailNumber explTest1Raw
+let explTestRaw = [
+    "[[[[[9,8],1],2],3],4]"
+    "[7,[6,[5,[4,[3,2]]]]]"
+    "[[6,[5,[4,[3,2]]]],1]"
+    "[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]"
+    "[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]"
+    ]
+
+let ets = explTestRaw |> Seq.map parseSnailNumber
 
 type ExplResult =
     | Nothing of SnailDigit
-    | Propagate of int*int
+    | Propagate of SnailDigit*int*int
     | PropLeft of int*SnailDigit
     | PropRight of SnailDigit*int
 
@@ -126,11 +133,11 @@ let rec addRight (sd: SnailDigit) v =
 
 let rec tryExplode sn =
     let rec helper sd depth =
-        if (depth = 4) then
+        if (depth = 5) then
             printfn "Reached depth 5 with: %O" sd
             match sd with
-            | Num (Lit l, Lit r) -> Propagate (l, r)
-            | _ -> failwith "Reached depth 5 but not with a literal!"
+            | Num (Lit l, Lit r) -> Propagate (Lit 0, l, r)
+            | Lit a -> Nothing sd
         else
             match sd with
             | Num (l, r) ->
@@ -140,29 +147,64 @@ let rec tryExplode sn =
                     let resRight = helper r (depth + 1)
                     match resRight with
                     | Nothing _ -> Nothing sd
-                    | Propagate (al, ar) -> PropRight ((addRight l al), ar)
+                    | Propagate (d, al, ar) -> PropRight (Num ((addRight l al),d), ar)
+                    | PropRight (d, ar) -> PropRight (Num (l, d), ar)
                     | x -> failwithf "helper for right term returned %O" x
-                | Propagate (al, ar) -> PropLeft (al, (addLeft r ar))
+                | Propagate (d, al, ar) -> PropLeft (al, Num (d, (addLeft r ar)))
                 | PropLeft (al, d) -> PropLeft (al, Num (d, r))
                 | x -> failwithf "helper for left term returned %O" x
             | Lit _ -> Nothing sd
 
     let lval, rval = sn
-    let resLeft = helper lval 1
+    let resLeft = helper lval 2
     match resLeft with
     | Nothing s ->
-        let resRight = helper rval 1
+        let resRight = helper rval 2
         match resRight with
         | Nothing t -> false, sn
-        | Propagate (addL, addR) -> failwith "Received Propagate on mainlevel"
+        | Propagate (d,addL, addR) -> failwith "Received Propagate on mainlevel"
         | PropLeft (al, d) -> true, SnailNumber ((addLeft lval al), d)
         | PropRight (d, ar) -> true, SnailNumber (lval, d)
-    | Propagate (addL, addR) -> failwith "Received Propagate on mainlevel"
+    | Propagate (d, addL, addR) -> failwith "Received Propagate on mainlevel"
     | PropLeft (al, d) -> true, SnailNumber (d, rval)
     | PropRight (d, ar) -> true, SnailNumber (d, (addRight rval ar))
 
-tryExplode et1
+ets |> Seq.map tryExplode |> List.ofSeq
 
+
+let splitTestRaw = [
+    "[11,4]"
+    "[7,11]"
+    "[[6,[5,[4,[11,2]]]],1]"
+    "[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,11]]]]]"
+    "[[3,[2,[1,[7,11]]]],[6,[5,[4,[3,2]]]]]"
+    ]
+
+let sts = splitTestRaw |> Seq.map parseSnailNumber |> List.ofSeq
+
+let trySplit sn =
+    let rec helper sd =
+        match sd with
+        | Lit n when (n >= 10) -> true, Num (Lit (int(Math.Floor(float n / 2.0))), Lit (int(Math.Ceiling(float n / 2.0))))
+        | Lit _ -> false, sd
+        | Num (l, r) ->
+            let didSplit, d = helper l
+            if (didSplit) then
+                true, Num (d, r)
+            else
+                let didSplit, d = helper r
+                if (didSplit) then
+                    true, Num (l, d)
+                else
+                    false, sd
+    let sd = Num sn
+    let res, resSd = helper sd
+    match resSd with
+    | Num (l, r) -> res, (l, r)
+    | _ -> failwith "Result of trySplit-helperis not a Num!"
+
+
+sts |> Seq.map trySplit |> List.ofSeq
 
 let reduceSnailNumber sn =
     sn
