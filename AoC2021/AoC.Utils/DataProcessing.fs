@@ -20,3 +20,5 @@ module DataProcessing =
                 lst
                 [])
     
+    let parse3dPos (s: string) =
+        s.Split(',') |> Seq.map Int32.Parse |> Array.ofSeq
