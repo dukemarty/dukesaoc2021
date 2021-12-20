@@ -33,6 +33,28 @@ let extendImageTriple (baseImage: string array) =
 
     res
 
+let extendImage (baseImage: string array) borderLeftRight borderTopBottom =
+    let constDots l = String.init l (fun _ -> ".")
+    let height = baseImage.Length
+    let width = baseImage.[0].Length
+
+    let res =
+        (List.init borderTopBottom (fun _ -> constDots (2 * borderLeftRight + width)))
+        @ (baseImage
+           |> Array.map
+               (fun s ->
+                   String.concat
+                       ""
+                       [ (constDots borderLeftRight)
+                         s
+                         (constDots borderLeftRight) ])
+           |> List.ofArray)
+          @ (List.init borderTopBottom (fun _ -> constDots (2 * borderLeftRight + width)))
+        |> Array.ofList
+
+    res
+
+
 let extractWindow3x3 (image: string array) r c =
     String.concat
         ""
