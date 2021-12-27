@@ -13,3 +13,6 @@ let freqs =
     |> Map.ofSeq
 
 freqs |> Map.toSeq |> Seq.map fst
+
+
+let a = List.rev [1..14]
