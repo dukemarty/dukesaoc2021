@@ -104,6 +104,65 @@ let analyzeTry3 prog =
     //(225, 1, 5854); (5860, 6, 225); (152377, 1, 5860); (5860, 5, 152377);
     //(152369, 1, 5860); (5860, 9, 152369); (225, 1, 5860); (8, 1, 225); (0, 6, 8)]
 
+let analyzeTry4 prog =
+    let digitListToString l = String.concat "" (l |> List.map (fun i -> i.ToString()))
+
+    let findMaxResult (posZs: Map<int, Set<int*int*int>>) =
+        let mutable res = [posZs.[0] |> Set.toList |> List.maxBy (fun (_, i, _) -> i)]
+        for i in [1..13] do
+            let (_, _, prev) = res.Head
+            let nexts = posZs.[i] |> Set.filter (fun (z, _, _) -> z = prev) |> Set.toList
+            res <- (nexts |> List.maxBy (fun (_, i, _) -> i))::res
+        printfn "Analysis, one result: %A" res
+        let resultIs = res |> List.map (fun (_, i, _) -> i) |> List.rev
+        res, resultIs
+
+    let findMinResult (posZs: Map<int, Set<int*int*int>>) =
+        let mutable res = [posZs.[0] |> Set.toList |> List.minBy (fun (_, i, _) -> i)]
+        for i in [1..13] do
+            let (_, _, prev) = res.Head
+            let nexts = posZs.[i] |> Set.filter (fun (z, _, _) -> z = prev) |> Set.toList
+            res <- (nexts |> List.minBy (fun (_, i, _) -> i))::res
+        printfn "Analysis, one result: %A" res
+        let resultIs = res |> List.map (fun (_, i, _) -> i) |> List.rev
+        res, resultIs
+
+    let chunks = splitProgramChunks prog
+    let mutable validResultZs = Map.empty
+    validResultZs <- validResultZs.Add(13, Set.empty.Add(0))
+    let mutable possibleInZs = Map.empty
+    for c in (List.rev [0..13]) do
+        printfn "=== Chunk %d =================================" (c+1)
+        let mutable possibleZs = Set.empty
+        for z in 0..1000000 do
+            for i in 1..9 do
+                let inputList = [ i ]
+                let resState = AluSimulator.runCodeWithZ z chunks.[c] inputList
+                if (validResultZs.[c].Contains resState.Z) then
+                    possibleZs <- possibleZs.Add (z,i, resState.Z)
+        possibleInZs <- possibleInZs.Add(c, possibleZs)
+        validResultZs <- validResultZs.Add(c-1, possibleZs |> Set.map (fun (z, _, _) -> z))
+    let maxRes, maxIs = findMaxResult possibleInZs
+    printfn "Analysis #4, results for max:"
+    printfn "  resulting I's list  for max: %A" maxIs
+    printfn "  resulting I's MonaD for max: %s" (digitListToString maxIs)
+    let minRes, minIs = findMinResult possibleInZs
+    printfn "Analysis #4, results for min:"
+    printfn "  resulting I's list  for min: %A" minIs
+    printfn "  resulting I's MonaD for min: %s" (digitListToString minIs)
+    //Analysis, one result: [(11, 4, 0); (310, 9, 11); (8076, 9, 310); (310, 7, 8076); (8072, 9, 310);
+    // (310, 9, 8072); (8073, 9, 310); (209919, 5, 8073); (8073, 9, 209919);
+    // (209907, 1, 8073); (8073, 9, 209907); (310, 4, 8073); (11, 8, 310); (0, 9, 11)]
+    //Analysis #4, results for max:
+    //  resulting I's list  for max: [9; 8; 4; 9; 1; 9; 5; 9; 9; 9; 7; 9; 9; 4]
+    //  resulting I's MonaD for max: 98491959997994
+    //Analysis, one result: [(8, 1, 0); (225, 2, 8); (5860, 3, 225); (225, 1, 5860); (5854, 1, 225);
+    // (225, 1, 5854); (5860, 6, 225); (152377, 1, 5860); (5860, 5, 152377);
+    // (152369, 1, 5860); (5860, 9, 152369); (225, 1, 5860); (8, 1, 225); (0, 6, 8)]
+    //Analysis #4, results for min:
+    //  resulting I's list  for min: [6; 1; 1; 9; 1; 5; 1; 6; 1; 1; 1; 3; 2; 1]
+    //  resulting I's MonaD for min: 61191516111321
+
 let part1LargestValidMonad prog =
     //let resState = AluSimulator.runCode prog [ 1;1;1;1;1;1;1;1;1; i;j;k;l;m ]
     for i in 1..9 do
@@ -129,7 +188,7 @@ let main argv =
     printfn "Day 24: Arithmetic Logic Unit\n=============================\n"
     let aluProg = (AluProgram.loadProgram (DataInput.Puzzle)) |> List.ofSeq
     printfn "ALU program: %A" aluProg
-    //analyzeTry3 aluProg
-    part1JustCheck aluProg
+    analyzeTry4 aluProg
+    //part1JustCheck aluProg
     //part1LargestValidMonad aluProg
     0 // return an integer exit code
