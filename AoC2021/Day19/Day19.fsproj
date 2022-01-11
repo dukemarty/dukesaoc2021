@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿  <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -12,8 +12,11 @@
     <Content Include="data\sample.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Compile Include="Vector.fs" />
     <Compile Include="ScannerReadings.fs" />
+    <Compile Include="Analysis.fs" />
     <Compile Include="Program.fs" />
+    <None Include="scratchpad.fsx" />
   </ItemGroup>
 
   <ItemGroup>

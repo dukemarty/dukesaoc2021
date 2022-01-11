@@ -1,10 +1,14 @@
-﻿module ScannerReadings
+﻿
+
+module ScannerReadings
 
 open System
 open AoC.Utils
 
-let private parseScannerBlock block =
-    List.tail block |> List.map DataProcessing.parse3dPos
+
+let private parseScannerBlock block : Vector.Vec3d list =
+    List.tail block
+    |> List.map DataProcessing.parse3dPos
 
 let loadData source =
     let blocks =
