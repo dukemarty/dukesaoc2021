@@ -15,7 +15,7 @@ let part1ScansCountMerged data =
 [<EntryPoint>]
 let main argv =
     printfn "Day 19: Beacon Scanner\n======================\n"
-    let data = ScannerReadings.loadData DataInput.Sample
+    let data = ScannerReadings.loadData (DataInput.SampleI 1)
     //printfn "Data: %A" data
     part1ScansCountMerged data
     0 // return an integer exit code
