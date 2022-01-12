@@ -34,10 +34,10 @@ let findPossibleMatches d1 d2 =
     let helper (d: AnalysisElement) =
         let x =
             d2
-            |> List.mapi (fun i (e: AnalysisElement) -> i, e, Set.intersect d.Environment e.Environment)
-            |> List.maxBy (fun (_, _, s) -> s.Count)
+            |> List.mapi (fun i (e: AnalysisElement) -> e, Set.intersect d.Environment e.Environment)
+            |> List.maxBy (fun (_, s) -> s.Count)
 
-        let i, e, s = x
+        let e, s = x
 
         if (s.Count > 1) then
             Some { El1 = d; El2 = e; Congruences = s }
@@ -61,8 +61,14 @@ let determineRotation matchingPairs =
         |> List.map (fun tm -> tm, tm.Congruences |> Set.filter (fun a -> (Set.ofArray a).Count = 3))
         |> List.map (fun (tm, rc) -> rc |> Set.map (fun a -> fst (tm.El1.Distances |> List.find (fun t -> snd t = a)), fst (tm.El2.Distances |> List.find (fun t -> snd t = a))))
     let allTMs = allRelCongr |> List.map (fun tl -> tl |> Seq.map Vector.determineTransformationMatrix |> Seq.countBy id)
+    //printfn "  #rotations: %A" (allTMs |> List.map (fun l -> l |> Seq.length))
     let bestFitTMs = allTMs |> List.map (fun s -> fst(s |> Seq.maxBy snd))
     let singleBestFitTM = fst (bestFitTMs |> List.countBy id |> List.maxBy snd)
+    printfn "  Determined %A" singleBestFitTM
+
+    //let dbg = allRelCongr |> List.map (fun s -> s |> Set.map (fun (a, b) -> (a, b, Vector.applyRotation singleBestFitTM b)))
+    //printfn "  For verification: matched and rotated distances:\n%A" dbg
+
     singleBestFitTM
 
 let determineFullTransformation d1 d2 =
@@ -73,10 +79,14 @@ let determineFullTransformation d1 d2 =
     let pointPairs = matchingPairs |> List.map (fun mp -> mp.El1.Point, mp.El2.Point)
     let rotatedPairs = pointPairs |> List.map (fun (p1, p2) -> p1, (Vector.applyRotation rotation p2))
     
-    let translation: Vector.Vec3d = fst (rotatedPairs 
-                      |> List.map (fun (p1, p2) -> fst (distElements p1 p2))
-                      |> List.countBy id
-                      |> List.maxBy snd)
+    let translations = rotatedPairs 
+                       |> List.map (fun (p1, p2) -> fst (distElements p1 p2))
+                       |> List.countBy id
+    let translation: Vector.Vec3d = fst (translations |> List.maxBy snd)
+    //let translation: Vector.Vec3d = fst (rotatedPairs 
+    //                  |> List.map (fun (p1, p2) -> fst (distElements p1 p2))
+    //                  |> List.countBy id
+    //                  |> List.maxBy snd)
     rotation, translation
 
 let mergePointClouds d1 d2 =
@@ -86,3 +96,7 @@ let mergePointClouds d1 d2 =
     let mergedPoints = Set.union (pl1 |> Set.ofList) (pl2 |> Set.ofList)
     analyze (mergedPoints |> Set.toList)
     
+let findBestMergePartner d1 dlist =
+    dlist
+    |> List.map (fun d -> d, (findPossibleMatches d1 d))
+    |> List.maxBy (fun (d, ml) -> ml |> List.length)

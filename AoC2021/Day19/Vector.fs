@@ -12,13 +12,13 @@ let determineTransformationMatrix (t: Vec3d * Vec3d): Trafo =
     [ 0 .. 2 ]
     |> List.map
         (fun i ->
-            a
+            b
             |> Array.map
-                (fun aj ->
-                    if (abs (aj) <> abs (b.[i])) then
+                (fun bj ->
+                    if (abs (bj) <> abs (a.[i])) then
                         0
                     else
-                        (if (aj * b.[i] > 0) then 1 else -1)))
+                        (if (bj * a.[i] > 0) then 1 else -1)))
     |> Array.ofList
 
 let applyRotation (t: Trafo) (p: Vec3d): Vec3d =
@@ -28,4 +28,4 @@ let applyTranslation (t: Vec3d) (p: Vec3d): Vec3d =
     sum p t
 
 let transform rot transl p =
-    applyTranslation (applyRotation rot p) transl
+    applyTranslation transl (applyRotation rot p) 
