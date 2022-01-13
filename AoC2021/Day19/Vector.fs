@@ -3,10 +3,14 @@
 type Vec3d = int array
 type Trafo = int array array
 
+type FullTransform = { Rotation: Trafo; Translation: Vec3d }
+
 let diff (a: Vec3d) (b: Vec3d) = Array.map2 (-) a b
 let sum (a: Vec3d) (b: Vec3d) = Array.map2 (+) a b
 
-let determineTransformationMatrix (t: Vec3d * Vec3d): Trafo =
+let manhattanLength (a: Vec3d) = a |> Array.sumBy abs
+
+let determineTransformationMatrix (t: Vec3d * Vec3d) : Trafo =
     let a, b = t
 
     [ 0 .. 2 ]
@@ -21,11 +25,15 @@ let determineTransformationMatrix (t: Vec3d * Vec3d): Trafo =
                         (if (bj * a.[i] > 0) then 1 else -1)))
     |> Array.ofList
 
-let applyRotation (t: Trafo) (p: Vec3d): Vec3d =
-    t |> Array.map (fun r -> (Array.map2 (*) r p) |> Array.sum)
+let applyRotation (t: Trafo) (p: Vec3d) : Vec3d =
+    t
+    |> Array.map (fun r -> (Array.map2 (*) r p) |> Array.sum)
 
-let applyTranslation (t: Vec3d) (p: Vec3d): Vec3d =
-    sum p t
+let applyTranslation (t: Vec3d) (p: Vec3d) : Vec3d = sum p t
 
 let transform rot transl p =
-    applyTranslation transl (applyRotation rot p) 
+    applyTranslation transl (applyRotation rot p)
+
+let useTransform trans p =
+    applyTranslation trans.Translation (applyRotation trans.Rotation p)
+

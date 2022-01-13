@@ -94,7 +94,7 @@ let mergePointClouds d1 d2 =
     let pl1 = d1 |> List.map (fun ae -> ae.Point)
     let pl2 = d2 |> List.map (fun ae -> Vector.transform rot transl ae.Point)
     let mergedPoints = Set.union (pl1 |> Set.ofList) (pl2 |> Set.ofList)
-    analyze (mergedPoints |> Set.toList)
+    analyze (mergedPoints |> Set.toList), { Vector.FullTransform.Rotation=rot; Vector.FullTransform.Translation=transl }
     
 let findBestMergePartner d1 dlist =
     dlist

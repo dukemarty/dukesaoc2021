@@ -1,6 +1,4 @@
-﻿
-
-module ScannerReadings
+﻿module ScannerReadings
 
 open System
 open AoC.Utils
