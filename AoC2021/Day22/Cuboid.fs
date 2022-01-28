@@ -3,18 +3,11 @@ module Cuboid
 
 type Range = { From: int; To: int }
 
-//type Cuboid = {
-//    X: Range
-//    Y: Range
-//    Z: Range
-//    }
-
 type Cuboid = Range array
 
 type CuboidRelation = Unrelated | Equal | LcontainsR | RcontainsL | LoverlapsLeft | LoverlapsRight
 
 
-//let prettify c = sprintf "(%d..%d/%d..%d/%d..%d)" c.X.From c.X.To c.Y.From c.Y.To c.Z.From c.Z.To
 let prettify c = sprintf "(%s)" (String.concat "/" (c |> Array.map (fun r -> sprintf "%d..%d" r.From r.To)))
 
 let calcVolume c: int64 =
