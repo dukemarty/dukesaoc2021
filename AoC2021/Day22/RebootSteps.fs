@@ -8,14 +8,11 @@ type RebootAction =
     | On
     | Off
 
-type Range = { From: int; To: int }
-
 type RebootStep =
     { Action: RebootAction
-      X: Range
-      Y: Range
-      Z: Range }
-
+      X: Cuboid.Range
+      Y: Cuboid.Range
+      Z: Cuboid.Range }
 
 let parseRebootStep line =
     let m =
@@ -41,3 +38,10 @@ let parseRebootStep line =
 let loadAllSteps source =
     let lines = DataInput.multipleRawLines source
     lines |> List.map parseRebootStep
+
+//let getCuboid rs =
+//    { Cuboid.X = rs.X
+//      Cuboid.Y = rs.Y
+//      Cuboid.Z = rs.Z }
+
+let getCuboid rs = [| rs.X; rs.Y; rs.Z |]

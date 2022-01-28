@@ -9,13 +9,19 @@
     <Content Include="data\puzzle.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="data\sample3.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="data\sample2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="data\sample1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="scratchpad.fsx" />
+    <Compile Include="Cuboid.fs" />
     <Compile Include="RebootSteps.fs" />
+    <Compile Include="Part1.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
