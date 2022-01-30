@@ -32,7 +32,7 @@ module DataInput =
             .Head
 
     let commaSeparatedIntList source =
-        (singleRawLine source).Split(",")
+        (singleRawLine source).Split(',')
         |> Seq.map Int32.Parse
 
     let intMatrix source =
